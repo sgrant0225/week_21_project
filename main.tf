@@ -21,6 +21,20 @@ resource "aws_launch_configuration" "instance_config" {
 }
 
 
+resource "aws_autoscaling_group" "autoscaling" {
+  name_prefix          = "autoscaling"
+  launch_configuration = aws_launch_configuration.instance_config.id
+  max_size             = 5
+  min_size             = 2
+  vpc_zone_identifier  = 
+}
+
+
+
+
+
+
+
 
 
 
