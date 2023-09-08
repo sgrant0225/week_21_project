@@ -27,10 +27,19 @@ resource "aws_vpc" "terraform_vpc" {
 #Subnet Creation
 resource "aws_subnet" "subnet1" {
   vpc_id            = aws_vpc.terraform_vpc.id
-  cidr_block        = "172.31.2.0/24"
-  availability_zone = "eu-central-1a"
+  cidr_block        = "172.31.1.0/24"
+  availability_zone = "us-east-1"
   tags = {
     Name = "subnet1"
+  }
+}
+
+resource "aws_subnet" "subnet2" {
+  vpc_id            = aws_vpc.terraform_vpc.id
+  cidr_block        = "172.31.2.0/24"
+  availability_zone = "us-east-1"
+  tags = {
+    Name = "subnet2"
   }
 }
 
@@ -51,7 +60,7 @@ resource "aws_autoscaling_group" "autoscaling" {
   launch_configuration = aws_launch_configuration.instance_config.id
   max_size             = 5
   min_size             = 2
-  vpc_zone_identifier  = 
+  vpc_zone_identifier  = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]
 }
 
 
