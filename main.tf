@@ -55,8 +55,8 @@ resource "aws_launch_configuration" "instance_config" {
 }
 
 
-resource "aws_autoscaling_group" "autoscaling" {
-  name_prefix          = "autoscaling"
+resource "aws_autoscaling_group" "asg" {
+  name_prefix          = "asg"
   launch_configuration = aws_launch_configuration.instance_config.id
   max_size             = 5
   min_size             = 2
@@ -64,9 +64,52 @@ resource "aws_autoscaling_group" "autoscaling" {
 }
 
 
+#Security Group
+resource "aws_security_group" "allow_traffic_to_asg" {
+  name        = "allow_traffic_to_asg"
+  description = "Allow TLS inbound traffic for asg"
+  vpc_id      = aws_vpc.terraform_vpc.id
 
+ingress {
+    description = "Allow SSH Traffic"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
+ ingress {
+    description = "Allow HTTP Traffic"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  ingress {
+    description = "Allow HTTPS Traffic"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+  ingress {
+    description = "Allow Temporary/Private Traffic "
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+}
 
 
 
